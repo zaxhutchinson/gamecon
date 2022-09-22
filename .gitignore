@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Additional
+gamecon
+/inc
+/lib
+/obj
