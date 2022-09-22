@@ -2,6 +2,7 @@
 #include<memory>
 #include<cstdint>
 #include<mutex>
+#include<vector>
 
 namespace gcon {
 
@@ -12,39 +13,60 @@ namespace gcon {
     using i64 = int64_t;
     template<typename T>
     using vec = std::vector<T>;
+    using ID = i64;  // Override to use a different type
+
+    class Request;
 
     /* Item  */
-    template<class T=i64, class U=i64>
     class Item {
     private:
-        T type;
+        ID type;
         i64 amt;
-        bool is_request;
-        U dest_id;
     public:
         Item() { amt = 0; }
-        Item(T _type) { type = _type; amt = 0; is_request = false;}
-        Item(T _type, i64 _amt) { type = _type; amt = _amt; is_request = false;}
-        Item(T _type, i64 _amt, U _dest_id) { 
-            type = _type; 
-            amt = _amt;
-            is_request = true;
-            dest_id = _dest_id; 
+        Item(ID _type) { type = _type; amt = 0;}
+        Item(ID _type, i64 _amt) { type = _type; amt = _amt;}
+        Item(const Request & r) {
+            type = r.GetType();
+            amt = r.GetAmt();
         }
-        T GetType() { return type; }
-        i64 GetAmt() { return amt; }
+
+        ID GetType() const { return type; }
+        i64 GetAmt() const { return amt; }
         void SetAmt(i64 a) { amt = a; }
-        bool IsRequest() { return is_request; }
-        void SetRequest(bool r) { is_request = r; }
-        void CloseRequest() { is_request = false; }
-        U GetDestID() { return dest_id; }
     };
 
-    template<class T=i64>
+    /* Request */
+    class Request {
+    private:
+        ID type;
+        i64 amt;
+        vec<ID> route;
+    public:
+        Request() { amt = 0; }
+        Request(ID _type) { type = _type; amt = 0; }
+        Request(ID _type, i64 _amt) { type = _type; amt = _amt; }
+        Request(const Item & i) {
+            type = i.GetType();
+            amt = i.GetAmt();
+        }
+        ID GetType() const { return type; }
+        i64 GetAmt() const { return amt; }
+    };
+
+
+
     class Node {
     private:
-        T id;
+        ID id;
         vec<Item> items;
+    public:
+        Node() {}
+        Node(ID _id) { id = _id; }
+        ID GetID() { return id; }
+        void AddItem(Item i) {
+
+        }
     };
 
 
