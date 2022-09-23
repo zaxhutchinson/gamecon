@@ -5,9 +5,9 @@ CC=g++ # define the compiler to use
 TARGET=gamecon # define the name of the executable
 
 # RELEASE
-# CFLAGS= -c -std=c++20 -Wall -O3
+# CFLAGS= -c -std=c++17 -Wall -O3
 # DEBUG
-CFLAGS= -c -std=c++20 -Wall -g3
+CFLAGS= -c -std=c++17 -Wall -g3
 
 LFLAGS= -Llib -lm
 SRCDIR = src

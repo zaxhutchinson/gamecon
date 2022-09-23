@@ -15,6 +15,7 @@ namespace gcon {
     using vec = std::vector<T>;
     using ID = i64;  // Override to use a different type
 
+    /* Forwards */
     class Request;
 
     /* Item  */
@@ -23,17 +24,18 @@ namespace gcon {
         ID type;
         i64 amt;
     public:
-        Item() { amt = 0; }
-        Item(ID _type) { type = _type; amt = 0;}
-        Item(ID _type, i64 _amt) { type = _type; amt = _amt;}
-        Item(const Request & r) {
-            type = r.GetType();
-            amt = r.GetAmt();
-        }
+        Item();
+        Item(ID _type);
+        Item(ID _type, i64 _amt);
+        Item(const Item & i) = default;
+        Item(Item && i) = default;
+        Item& operator=(const Item & i) = default;
+        Item& operator=(Item && i) = default;
+        Item(const Request & r);
 
-        ID GetType() const { return type; }
-        i64 GetAmt() const { return amt; }
-        void SetAmt(i64 a) { amt = a; }
+        ID GetType() const;
+        i64 GetAmt() const;
+        void SetAmt(i64 a);
     };
 
     /* Request */
@@ -43,15 +45,16 @@ namespace gcon {
         i64 amt;
         vec<ID> route;
     public:
-        Request() { amt = 0; }
-        Request(ID _type) { type = _type; amt = 0; }
-        Request(ID _type, i64 _amt) { type = _type; amt = _amt; }
-        Request(const Item & i) {
-            type = i.GetType();
-            amt = i.GetAmt();
-        }
-        ID GetType() const { return type; }
-        i64 GetAmt() const { return amt; }
+        Request();
+        Request(ID _type);
+        Request(ID _type, i64 _amt);
+        Request(const Request & r) = default;
+        Request(Request && r) = default;
+        Request& operator=(const Request & r) = default;
+        Request& operator=(Request && r) = default;
+        Request(const Item & i);
+        ID GetType() const;
+        i64 GetAmt() const;
     };
 
 
@@ -60,13 +63,22 @@ namespace gcon {
     private:
         ID id;
         vec<Item> items;
+        vec<Request> requests;
     public:
-        Node() {}
-        Node(ID _id) { id = _id; }
-        ID GetID() { return id; }
-        void AddItem(Item i) {
+        Node();
+        Node(ID _id);
+        ID GetID() const;
+        void AddItem(Item i);
+    };
 
-        }
+
+    /* Agent class */
+    class Agent {
+    private:
+        ID id;
+        vec<ID> node_ids;
+    public:
+        
     };
 
 
