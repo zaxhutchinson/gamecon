@@ -7,15 +7,31 @@ namespace gcon {
     Item::Item() { amt = 0; }
     Item::Item(ID _id) { id = _id; amt = 0;}
     Item::Item(ID _id, i64 _amt) { id = _id; amt = _amt;}
+    str Item::ToString() {
+        std::stringstream ss;
+        ss << "ITEM " << id << " " << amt;
+        return ss.str();
+    }
     ID Item::GetID() const { return id; }
     i64 Item::GetAmt() const { return amt; }
     void Item::SetAmt(i64 a) { amt = a; }
 
     /* Request Implementation */
     Request::Request() { }
+    Request::Request(Item _item) {
+        item = _item;
+    }
     Request::Request(Item _item, ID _dest) {
         item = _item;
         dest_list.push_back(_dest);
+    }
+    str Request::ToString() {
+        std::stringstream ss;
+        ss << "REQUEST " << item.ToString() << " Dests: ";
+        for(size_t i = 0; i < dest_list.size(); i++) {
+            ss << dest_list[i] << " ";
+        }
+        return ss.str();
     }
     Item& Request::GetItem() { return item; }
     vec<ID>& Request::GetDestList() { return dest_list; }
@@ -53,6 +69,14 @@ namespace gcon {
         item = _item;
         dest_list = _dest_list;
     }
+    str Delivery::ToString() {
+        std::stringstream ss;
+        ss << "DELIVERY " << item.ToString() << " Dests: ";
+        for(size_t i = 0; i < dest_list.size(); i++) {
+            ss << dest_list[i] << " ";
+        }
+        return ss.str();
+    }
     Item& Delivery::GetItem() { return item; }
     vec<ID>& Delivery::GetDestList() { return dest_list; }
     bool Delivery::IsIDInDestList(ID id) {
@@ -70,11 +94,30 @@ namespace gcon {
     /* Node Implementation */
     Node::Node() {}
     Node::Node(ID _id) { id = _id; }
+
+    str Node::ToString() {
+        std::stringstream ss;
+        ss << "NODE " << id << "\n   CONNS ";
+        for(size_t i = 0; i < conns.size(); i++) {
+            ss << conns[i] << " ";
+        }
+        for(size_t i = 0; i < items.size(); i++) {
+            ss << "\n   " << items[i].ToString();
+        }
+        for(size_t i = 0; i < requests.size(); i++) {
+            ss << "\n   " << requests[i].ToString();
+        }
+        for(size_t i = 0; i < deliveries.size(); i++) {
+            ss << "\n   " << deliveries[i].ToString();
+        }
+        return ss.str();
+    }
+
     ID Node::GetID() const { return id; }
 
     void Node::AddConn(ID _id) {
         if(!HasConn(_id) && _id != id) {
-            conns.push_back(id);
+            conns.push_back(_id);
         }
     }
     void Node::AddConns(vec<ID> & _conns) {
@@ -152,10 +195,10 @@ namespace gcon {
         */
         for(
             vec<ID>::reverse_iterator rit = d.GetDestList().rbegin();
-            rit != d.GetDestList().rbegin();
+            rit != d.GetDestList().rend();
         ) {
             // Deleting with reverse_iterators is bit shit.
-            if(*rit!=id) {
+            if((*rit)!=id) {
                 std::advance(rit,1);
                 d.GetDestList().erase(rit.base());
             } else {
@@ -189,6 +232,11 @@ namespace gcon {
         }
     }
 
+    void Node::InitiateRequest(Item item) {
+        Request r(item);
+        requests.push_back(r);
+    }
+
     vec<Request> Node::PassOnRequests(ID next_dest) {
         vec<Request> reqs;
         for(
@@ -201,30 +249,32 @@ namespace gcon {
             */
             vec<ID> & req_dest_list = it->GetDestList();
 
-            // If the previous node was not next_dest, send request.
-            if(req_dest_list.back()!=next_dest) {
-                if(req_dest_list.front() != next_dest) {
+            if(req_dest_list.size()==0) {
+                Request r = *it;
+                r.PushDest(id);
+                reqs.push_back(r);
+                it = requests.erase(it);
+            } else {
+                if(conns.size()==1) {
                     Request r = *it;
                     r.PushDest(id);
                     reqs.push_back(r);
                     it = requests.erase(it);
                 }
-                it++;
-            }
-            // But if the previous node was next_dest, but this node
-            // has only one connection, then send, unless the one connection
-            // is back to the node that created the request
-            else if(conns.size()==1) {
-                if(req_dest_list.front() != next_dest) {
+                else if(req_dest_list.back() == next_dest && req_dest_list.front() != next_dest) {
                     Request r = *it;
                     r.PushDest(id);
                     reqs.push_back(r);
                     it = requests.erase(it);
                 }
-                it++;
-            }
-            else {
-                it++;
+                else if(req_dest_list.back() != next_dest && req_dest_list.front() != next_dest) {
+                    Request r = *it;
+                    r.PushDest(id);
+                    reqs.push_back(r);
+                    it = requests.erase(it);
+                } else {
+                    it++;
+                }
             }
         }
 
@@ -285,6 +335,8 @@ namespace gcon {
                 if(item_it->GetAmt()==0) {
                     RemoveItem(item_it);
                 }
+            } else {
+                it++;
             }
         }
     }
@@ -299,6 +351,20 @@ namespace gcon {
     Trader::Trader(ID _id, vec<ID> & _nodes) {
         id = _id;
         nodes = _nodes;
+    }
+    str Trader::ToString() {
+        std::stringstream ss;
+        ss << "TRADER " << id << "\n   NODES ";
+        for(size_t i = 0; i < nodes.size(); i++) {
+            ss << nodes[i] << " ";
+        }
+        for(size_t i = 0; i < requests.size(); i++) {
+            ss << "\n   " << requests[i].ToString();
+        }
+        for(size_t i = 0; i < deliveries.size(); i++) {
+            ss << "\n   " << deliveries[i].ToString();
+        }
+        return ss.str();
     }
     ID Trader::GetID() const {
         return id;
@@ -374,6 +440,24 @@ namespace gcon {
 
 
     TradeNetwork::TradeNetwork() {}
+
+    str TradeNetwork::ToString() {
+        std::stringstream ss;
+        for(
+            umap<ID,Node>::iterator it = nodes.begin();
+            it != nodes.end(); it++
+        ) {
+            ss << it->second.ToString() << "\n\n";
+        }
+
+        for(
+            umap<ID,Trader>::iterator it = traders.begin();
+            it != traders.end(); it++
+        ) {
+            ss << it->second.ToString() << "\n\n";
+        }
+        return ss.str();
+    }
 
     void TradeNetwork::RefreshNetwork() {
         for(
@@ -453,12 +537,16 @@ namespace gcon {
                 it++;
             }
         }
+
+        to_node->CheckAndFillRequests();
     }
     void TradeNetwork::TraderLeaves(ID trader_id, ID from_node_id, ID to_node_id) {
         Node * from_node = GetNode(from_node_id);
         Node * to_node = GetNode(to_node_id);
         Trader * trader = GetTrader(trader_id);
         if(!to_node || !from_node || !trader) return;
+
+        to_node->CheckAndFillRequests();
 
         vec<Delivery> outbound_deliveries = from_node->PassOnDeliveries(to_node_id);
         vec<Request> outbound_requests = from_node->PassOnRequests(to_node_id);

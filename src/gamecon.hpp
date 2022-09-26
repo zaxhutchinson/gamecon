@@ -5,6 +5,8 @@
 #include<vector>
 #include<optional>
 #include<unordered_map>
+#include<sstream>
+#include<iostream>
 
 namespace gcon {
 
@@ -17,7 +19,7 @@ namespace gcon {
     using i64 = int64_t;
     template<typename T>
     using vec = std::vector<T>;
-    using ID = i64;  // Override to use a different type
+    using ID = str;  // Override to use a different type
     template<typename T, typename U>
     using umap = std::unordered_map<T,U>;
 
@@ -34,7 +36,7 @@ namespace gcon {
         Item(Item && i) = default;
         Item& operator=(const Item & i) = default;
         Item& operator=(Item && i) = default;
-
+        str ToString();
         ID GetID() const;
         i64 GetAmt() const;
         void SetAmt(i64 a);
@@ -48,11 +50,13 @@ namespace gcon {
         vec<ID> dest_list;
     public:
         Request();
+        Request(Item _item);
         Request(Item _item, ID _dest);
         Request(const Request & r) = default;
         Request(Request && r) = default;
         Request& operator=(const Request & r) = default;
         Request& operator=(Request && r) = default;
+        str ToString();
         Item& GetItem();
         vec<ID>& GetDestList();
         bool IsIDInDestList(ID id);
@@ -74,6 +78,7 @@ namespace gcon {
         Delivery(Delivery && r) = default;
         Delivery& operator=(const Delivery & r) = default;
         Delivery& operator=(Delivery && r) = default;
+        str ToString();
         Item& GetItem();
         vec<ID>& GetDestList();
         bool IsIDInDestList(ID id);
@@ -94,6 +99,7 @@ namespace gcon {
         Node(Node && n) = default;
         Node& operator=(const Node & n) = default;
         Node& operator=(Node && n) = default;
+        str ToString();
         ID GetID() const;
         void AddConn(ID _id);
         void AddConns(vec<ID> & _conns);
@@ -108,7 +114,7 @@ namespace gcon {
         void RemoveItem(vec<Item>::iterator it);
         bool AddDelivery(Delivery d);
         bool AddRequest(Request r);
-
+        void InitiateRequest(Item item);
         vec<Request> PassOnRequests(ID next_dest);
         vec<Delivery> PassOnDeliveries(ID next_dest);
         void CheckAndFillRequests();
@@ -131,6 +137,7 @@ namespace gcon {
         Trader(Trader && a) = default;
         Trader& operator=(const Trader & a) = default;
         Trader& operator=(Trader && a) = default;
+        str ToString();
         ID GetID() const;
         void AddNode(ID node);
         bool HasNode(ID node);
@@ -158,6 +165,7 @@ namespace gcon {
         TradeNetwork(TradeNetwork && tn) = delete;
         TradeNetwork& operator=(const TradeNetwork & tn) = delete;
         TradeNetwork& operator=(TradeNetwork && tn) = delete;
+        str ToString();
         /* RefreshNetwork
             This function removes all connections from the nodes and
             uses the traders to re-add all connections to the nodes.
