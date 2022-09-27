@@ -1,13 +1,24 @@
 #include<iostream>
 #include<vector>
+#include<cstring>
 
 #include"gamecon.hpp"
 
 using namespace gcon;
 
+void Test_001();
+
 int main(int argc, char**argv) {
 
-    
+    for(int i = 1; i < argc; i++) {
+        if(strcmp(argv[i],"001")==0) Test_001();
+    }
+
+    return 0;
+}
+
+
+void Test_001() {
 
 
     Node house("House");
@@ -52,5 +63,4 @@ int main(int argc, char**argv) {
     network_str = network.ToString();
     std::cout << network_str << std::endl;
 
-    return 0;
 }
