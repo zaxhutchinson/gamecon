@@ -10,44 +10,32 @@
 
 namespace gcon {
 
-    /* Aliases */
-    template<typename T>
-    using opt = std::optional<T>;
-    using str = std::string;
-    template<typename T>
-    using sptr = std::shared_ptr<T>;
-    using i64 = int64_t;
-    template<typename T>
-    using vec = std::vector<T>;
-    using ID = str;  // Override to use a different type
-    template<typename T, typename U>
-    using umap = std::unordered_map<T,U>;
+    using ID = std::string;
 
     /* Item  */
     class Item {
     private:
         ID id;
-        i64 amt;
+        int64_t amt;
     public:
         Item();
         Item(ID _id);
-        Item(ID _id, i64 _amt);
+        Item(ID _id, int64_t _amt);
         Item(const Item & i) = default;
         Item(Item && i) = default;
         Item& operator=(const Item & i) = default;
         Item& operator=(Item && i) = default;
-        str ToString();
+        std::string ToString();
         ID GetID() const;
-        i64 GetAmt() const;
-        void SetAmt(i64 a);
+        int64_t GetAmt() const;
+        void SetAmt(int64_t a);
     };
 
     /* Request */
-
     class Request {
     private:
         Item item;
-        vec<ID> dest_list;
+        std::vector<ID> dest_list;
     public:
         Request();
         Request(Item _item);
@@ -56,31 +44,30 @@ namespace gcon {
         Request(Request && r) = default;
         Request& operator=(const Request & r) = default;
         Request& operator=(Request && r) = default;
-        str ToString();
+        std::string ToString();
         Item& GetItem();
-        vec<ID>& GetDestList();
+        std::vector<ID>& GetDestList();
         bool IsIDInDestList(ID id);
         void PushDest(ID new_dest);
-        opt<ID> PopDest();
+        std::optional<ID> PopDest();
     };
-
 
     /* Delivery */
     class Delivery {
     private:
         Item item;
-        vec<ID> dest_list;
+        std::vector<ID> dest_list;
     public:
         Delivery();
         Delivery(Item _item, ID _dest);
-        Delivery(Item _item, vec<ID> & _dest_list);
+        Delivery(Item _item, std::vector<ID> & _dest_list);
         Delivery(const Delivery & r) = default;
         Delivery(Delivery && r) = default;
         Delivery& operator=(const Delivery & r) = default;
         Delivery& operator=(Delivery && r) = default;
-        str ToString();
+        std::string ToString();
         Item& GetItem();
-        vec<ID>& GetDestList();
+        std::vector<ID>& GetDestList();
         bool IsIDInDestList(ID id);
     };
 
@@ -88,10 +75,10 @@ namespace gcon {
     class Node {
     private:
         ID id;
-        vec<ID> conns;
-        vec<Item> items;
-        vec<Request> requests;
-        vec<Delivery> deliveries;
+        std::vector<ID> conns;
+        std::vector<Item> items;
+        std::vector<Request> requests;
+        std::vector<Delivery> deliveries;
     public:
         Node();
         Node(ID _id);
@@ -99,24 +86,24 @@ namespace gcon {
         Node(Node && n) = default;
         Node& operator=(const Node & n) = default;
         Node& operator=(Node && n) = default;
-        str ToString();
+        std::string ToString();
         ID GetID() const;
         void AddConn(ID _id);
-        void AddConns(vec<ID> & _conns);
+        void AddConns(std::vector<ID> & _conns);
         bool HasConn(ID _id);
-        vec<ID>::iterator FindConn(ID _id);
+        std::vector<ID>::iterator FindConn(ID _id);
         void RemoveConn(ID _id);
-        vec<ID> & GetConns();
+        std::vector<ID> & GetConns();
         void ClearConns();
         bool HasItem(ID item_id);
-        vec<Item>::iterator FindItem(ID item_id);
+        std::vector<Item>::iterator FindItem(ID item_id);
         void AddItem(Item i);
-        void RemoveItem(vec<Item>::iterator it);
+        void RemoveItem(std::vector<Item>::iterator it);
         bool AddDelivery(Delivery d);
         bool AddRequest(Request r);
         void InitiateRequest(Item item);
-        vec<Request> PassOnRequests(ID next_dest);
-        vec<Delivery> PassOnDeliveries(ID next_dest);
+        std::vector<Request> PassOnRequests(ID next_dest);
+        std::vector<Delivery> PassOnDeliveries(ID next_dest);
         void CheckAndFillRequests();
         
     };
@@ -126,46 +113,46 @@ namespace gcon {
     class Trader {
     private:
         ID id;
-        vec<ID> nodes;
-        vec<Request> requests;
-        vec<Delivery> deliveries;
+        std::vector<ID> nodes;
+        std::vector<Request> requests;
+        std::vector<Delivery> deliveries;
     public:
         Trader();
         Trader(ID _id);
-        Trader(ID _id, vec<ID> & _nodes);
+        Trader(ID _id, std::vector<ID> & _nodes);
         Trader(const Trader & a) = default;
         Trader(Trader && a) = default;
         Trader& operator=(const Trader & a) = default;
         Trader& operator=(Trader && a) = default;
-        str ToString();
+        std::string ToString();
         ID GetID() const;
         void AddNode(ID node);
         bool HasNode(ID node);
         void RemoveNode(ID node);
-        vec<ID> & GetNodes();
-        vec<Request> & GetRequests();
-        vec<Delivery> & GetDeliveries();
+        std::vector<ID> & GetNodes();
+        std::vector<Request> & GetRequests();
+        std::vector<Delivery> & GetDeliveries();
         void AddRequest(Request r);
         void AddDelivery(Delivery d);
-        void AddRequests(vec<Request> & reqs);
-        void AddDeliveries(vec<Delivery> & dels);
-        // vec<Request>::iterator RemoveRequest(vec<Request>::iterator it);
-        // vec<Delivery>::iterator RemoveDelivery(vec<Delivery>::iterator it);
+        void AddRequests(std::vector<Request> & reqs);
+        void AddDeliveries(std::vector<Delivery> & dels);
+        // std::vector<Request>::iterator RemoveRequest(std::vector<Request>::iterator it);
+        // std::vector<Delivery>::iterator RemoveDelivery(std::vector<Delivery>::iterator it);
 
     };
 
 
     class TradeNetwork {
     private:
-        umap<ID,Node> nodes;
-        umap<ID,Trader> traders;
+        std::unordered_map<ID,Node> nodes;
+        std::unordered_map<ID,Trader> traders;
     public:
         TradeNetwork();
         TradeNetwork(const TradeNetwork & tn) = delete;
         TradeNetwork(TradeNetwork && tn) = delete;
         TradeNetwork& operator=(const TradeNetwork & tn) = delete;
         TradeNetwork& operator=(TradeNetwork && tn) = delete;
-        str ToString();
+        std::string ToString();
         /* RefreshNetwork
             This function removes all connections from the nodes and
             uses the traders to re-add all connections to the nodes.

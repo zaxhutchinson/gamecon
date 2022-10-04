@@ -2,13 +2,19 @@
 #include<vector>
 #include<cstring>
 
+#include"defs.hpp"
 #include"gamecon.hpp"
+#include"gtime.hpp"
 
 using namespace gcon;
 
 void Test_001();
 
 int main(int argc, char**argv) {
+
+    Time t1(-1,0,6);
+    Time t2(1,-1,6);
+    std::cout << (t1 < t2) << std::endl;
 
     for(int i = 1; i < argc; i++) {
         if(strcmp(argv[i],"001")==0) Test_001();
