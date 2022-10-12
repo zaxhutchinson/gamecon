@@ -344,15 +344,15 @@ namespace gcon {
 
 
 
-    Trader::Trader() {}
-    Trader::Trader(ID _id) {
+    Actor::Actor() {}
+    Actor::Actor(ID _id) {
         id = _id;
     }
-    Trader::Trader(ID _id, std::vector<ID> & _nodes) {
+    Actor::Actor(ID _id, std::vector<ID> & _nodes) {
         id = _id;
         nodes = _nodes;
     }
-    std::string Trader::ToString() {
+    std::string Actor::ToString() {
         std::stringstream ss;
         ss << "TRADER " << id << "\n   NODES ";
         for(size_t i = 0; i < nodes.size(); i++) {
@@ -366,15 +366,15 @@ namespace gcon {
         }
         return ss.str();
     }
-    ID Trader::GetID() const {
+    ID Actor::GetID() const {
         return id;
     }
-    void Trader::AddNode(ID node) {
+    void Actor::AddNode(ID node) {
         if(!HasNode(node)) {
             nodes.push_back(node);
         }
     }
-    bool Trader::HasNode(ID node) {
+    bool Actor::HasNode(ID node) {
         for(
             std::vector<ID>::iterator it = nodes.begin();
             it != nodes.end();
@@ -384,7 +384,7 @@ namespace gcon {
         }
         return false;
     }
-    void Trader::RemoveNode(ID node) {
+    void Actor::RemoveNode(ID node) {
         for(
             std::vector<ID>::iterator it = nodes.begin();
             it != nodes.end();
@@ -396,22 +396,22 @@ namespace gcon {
             }
         }
     }
-    std::vector<ID> & Trader::GetNodes() {
+    std::vector<ID> & Actor::GetNodes() {
         return nodes;
     }
-    std::vector<Request> & Trader::GetRequests() {
+    std::vector<Request> & Actor::GetRequests() {
         return requests;
     }
-    std::vector<Delivery> & Trader::GetDeliveries() {
+    std::vector<Delivery> & Actor::GetDeliveries() {
         return deliveries;
     }
-    void Trader::AddRequest(Request r) {
+    void Actor::AddRequest(Request r) {
         requests.push_back(r);
     }
-    void Trader::AddDelivery(Delivery d) {
+    void Actor::AddDelivery(Delivery d) {
         deliveries.push_back(d);
     }
-    void Trader::AddRequests(std::vector<Request> & reqs) {
+    void Actor::AddRequests(std::vector<Request> & reqs) {
         for(
             std::vector<Request>::iterator it = reqs.begin();
             it != reqs.end(); it++
@@ -419,7 +419,7 @@ namespace gcon {
             requests.push_back(*it);
         }
     }
-    void Trader::AddDeliveries(std::vector<Delivery> & dels) {
+    void Actor::AddDeliveries(std::vector<Delivery> & dels) {
         for(
             std::vector<Delivery>::iterator it = dels.begin();
             it != dels.end(); it++
@@ -439,9 +439,9 @@ namespace gcon {
 
 
 
-    TradeNetwork::TradeNetwork() {}
+    Network::Network() {}
 
-    std::string TradeNetwork::ToString() {
+    std::string Network::ToString() {
         std::stringstream ss;
         for(
             std::unordered_map<ID,Node>::iterator it = nodes.begin();
@@ -451,15 +451,15 @@ namespace gcon {
         }
 
         for(
-            std::unordered_map<ID,Trader>::iterator it = traders.begin();
-            it != traders.end(); it++
+            std::unordered_map<ID,Actor>::iterator it = actors.begin();
+            it != actors.end(); it++
         ) {
             ss << it->second.ToString() << "\n\n";
         }
         return ss.str();
     }
 
-    void TradeNetwork::RefreshNetwork() {
+    void Network::RefreshNetwork() {
         for(
             std::unordered_map<ID,Node>::iterator it = nodes.begin();
             it != nodes.end();
@@ -469,8 +469,8 @@ namespace gcon {
         }
 
         for(
-            std::unordered_map<ID,Trader>::iterator it = traders.begin();
-            it != traders.end();
+            std::unordered_map<ID,Actor>::iterator it = actors.begin();
+            it != actors.end();
             it++
         ) {
             std::vector<ID> conns = it->second.GetNodes();
@@ -485,36 +485,36 @@ namespace gcon {
         }
     }
 
-    void TradeNetwork::RegisterNode(Node node) {
+    void Network::RegisterNode(Node node) {
         nodes.emplace(node.GetID(),node);
     }
-    void TradeNetwork::RegisterTrader(Trader trader) {
-        traders.emplace(trader.GetID(), trader);
+    void Network::RegisterActor(Actor actor) {
+        actors.emplace(actor.GetID(), actor);
     }
-    Node * TradeNetwork::GetNode(ID node_id) {
+    Node * Network::GetNode(ID node_id) {
         try {
             return &(nodes.at(node_id));
         } catch(std::out_of_range & e) {
             return nullptr;
         }
     }
-    Trader * TradeNetwork::GetTrader(ID trader_id) {
+    Actor * Network::GetActor(ID actor_id) {
         try {
-            return &(traders.at(trader_id));
+            return &(actors.at(actor_id));
         } catch(std::out_of_range & e) {
             return nullptr;
         }
     }
-    void TradeNetwork::TraderArrives(ID trader_id, ID from_node_id, ID to_node_id) {
+    void Network::ActorArrives(ID actor_id, ID from_node_id, ID to_node_id) {
         Node * from_node = GetNode(from_node_id);
         Node * to_node = GetNode(to_node_id);
-        Trader * trader = GetTrader(trader_id);
-        if(!to_node || !from_node || !trader) return;
+        Actor * actor = GetActor(actor_id);
+        if(!to_node || !from_node || !actor) return;
 
-        std::vector<Delivery> & inbound_deliveries = trader->GetDeliveries();
-        std::vector<Request> & inbound_requests = trader->GetRequests();
+        std::vector<Delivery> & inbound_deliveries = actor->GetDeliveries();
+        std::vector<Request> & inbound_requests = actor->GetRequests();
 
-        // Try to add all of the trader's requests to this node.
+        // Try to add all of the actor's requests to this node.
         for(
             std::vector<Request>::iterator it = inbound_requests.begin();
             it != inbound_requests.end();
@@ -526,7 +526,7 @@ namespace gcon {
             }
         }
 
-        // Try to add all of the trader's deliveries to this node.
+        // Try to add all of the actor's deliveries to this node.
         for(
             std::vector<Delivery>::iterator it = inbound_deliveries.begin();
             it != inbound_deliveries.end();
@@ -540,18 +540,18 @@ namespace gcon {
 
         to_node->CheckAndFillRequests();
     }
-    void TradeNetwork::TraderLeaves(ID trader_id, ID from_node_id, ID to_node_id) {
+    void Network::ActorLeaves(ID actor_id, ID from_node_id, ID to_node_id) {
         Node * from_node = GetNode(from_node_id);
         Node * to_node = GetNode(to_node_id);
-        Trader * trader = GetTrader(trader_id);
-        if(!to_node || !from_node || !trader) return;
+        Actor * actor = GetActor(actor_id);
+        if(!to_node || !from_node || !actor) return;
 
         to_node->CheckAndFillRequests();
 
         std::vector<Delivery> outbound_deliveries = from_node->PassOnDeliveries(to_node_id);
         std::vector<Request> outbound_requests = from_node->PassOnRequests(to_node_id);
 
-        trader->AddDeliveries(outbound_deliveries);
-        trader->AddRequests(outbound_requests);
+        actor->AddDeliveries(outbound_deliveries);
+        actor->AddRequests(outbound_requests);
     }
 }

@@ -31,10 +31,10 @@ void Test_001() {
     Node farm("Farm");
     Node store("Store");
 
-    Trader owner("Owner");
+    Actor owner("Owner");
     owner.AddNode("House");
     owner.AddNode("Store");
-    Trader farmer("Farmer");
+    Actor farmer("Farmer");
     farmer.AddNode("Farm");
     farmer.AddNode("Store");
 
@@ -42,29 +42,29 @@ void Test_001() {
     farm.AddItem(item);
     house.InitiateRequest(item);
 
-    TradeNetwork network;
+    Network network;
 
     network.RegisterNode(house);
     network.RegisterNode(farm);
     network.RegisterNode(store);
-    network.RegisterTrader(owner);
-    network.RegisterTrader(farmer);
+    network.RegisterActor(owner);
+    network.RegisterActor(farmer);
 
     network.RefreshNetwork();
 
     str network_str = network.ToString();
     std::cout << network_str << std::endl;
 
-    network.TraderLeaves("Owner","House","Store");
-    network.TraderArrives("Owner","House","Store");
-    network.TraderLeaves("Farmer","Farm","Store");
-    network.TraderArrives("Farmer","Farm","Store");
-    network.TraderLeaves("Farmer","Store","Farm");
-    network.TraderArrives("Farmer","Store","Farm");
-    network.TraderLeaves("Farmer","Farm","Store");
-    network.TraderArrives("Farmer","Farm","Store");
-    network.TraderLeaves("Owner","Store","House");
-    network.TraderArrives("Owner","Store","House");
+    network.ActorLeaves("Owner","House","Store");
+    network.ActorArrives("Owner","House","Store");
+    network.ActorLeaves("Farmer","Farm","Store");
+    network.ActorArrives("Farmer","Farm","Store");
+    network.ActorLeaves("Farmer","Store","Farm");
+    network.ActorArrives("Farmer","Store","Farm");
+    network.ActorLeaves("Farmer","Farm","Store");
+    network.ActorArrives("Farmer","Farm","Store");
+    network.ActorLeaves("Owner","Store","House");
+    network.ActorArrives("Owner","Store","House");
 
     network_str = network.ToString();
     std::cout << network_str << std::endl;

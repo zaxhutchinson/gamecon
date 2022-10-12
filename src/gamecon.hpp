@@ -110,20 +110,20 @@ namespace gcon {
 
 
     /* Trader class */
-    class Trader {
+    class Actor {
     private:
         ID id;
         std::vector<ID> nodes;
         std::vector<Request> requests;
         std::vector<Delivery> deliveries;
     public:
-        Trader();
-        Trader(ID _id);
-        Trader(ID _id, std::vector<ID> & _nodes);
-        Trader(const Trader & a) = default;
-        Trader(Trader && a) = default;
-        Trader& operator=(const Trader & a) = default;
-        Trader& operator=(Trader && a) = default;
+        Actor();
+        Actor(ID _id);
+        Actor(ID _id, std::vector<ID> & _nodes);
+        Actor(const Actor & a) = default;
+        Actor(Actor && a) = default;
+        Actor& operator=(const Actor & a) = default;
+        Actor& operator=(Actor && a) = default;
         std::string ToString();
         ID GetID() const;
         void AddNode(ID node);
@@ -142,16 +142,16 @@ namespace gcon {
     };
 
 
-    class TradeNetwork {
+    class Network {
     private:
         std::unordered_map<ID,Node> nodes;
-        std::unordered_map<ID,Trader> traders;
+        std::unordered_map<ID,Actor> actors;
     public:
-        TradeNetwork();
-        TradeNetwork(const TradeNetwork & tn) = delete;
-        TradeNetwork(TradeNetwork && tn) = delete;
-        TradeNetwork& operator=(const TradeNetwork & tn) = delete;
-        TradeNetwork& operator=(TradeNetwork && tn) = delete;
+        Network();
+        Network(const Network & tn) = delete;
+        Network(Network && tn) = delete;
+        Network& operator=(const Network & tn) = delete;
+        Network& operator=(Network && tn) = delete;
         std::string ToString();
         /* RefreshNetwork
             This function removes all connections from the nodes and
@@ -161,11 +161,11 @@ namespace gcon {
         */
         void RefreshNetwork();
         void RegisterNode(Node node);
-        void RegisterTrader(Trader trader);
+        void RegisterActor(Actor actor);
         Node * GetNode(ID node_id);
-        Trader * GetTrader(ID trader_id);
-        void TraderArrives(ID trader_id, ID from_node_id, ID to_node_id);
-        void TraderLeaves(ID trader_id, ID from_node_id, ID to_node_id);
+        Actor * GetActor(ID actor_id);
+        void ActorArrives(ID actor_id, ID from_node_id, ID to_node_id);
+        void ActorLeaves(ID actor_id, ID from_node_id, ID to_node_id);
     };
 
 
