@@ -3,7 +3,7 @@
 Trader::Trader() {
 
 }
-Trader::Trader(Vec2 _location, gcon::Actor * _actor)
+Trader::Trader(ID _location, gcon::Actor * _actor)
     : location(_location), actor(_actor)
 {}
 ID Trader::GetID() const {
@@ -12,12 +12,13 @@ ID Trader::GetID() const {
 gcon::Actor * Trader::GetActor() {
     return actor;
 }
-Vec2 Trader::GetLocation() const {
+ID Trader::GetLocation() const {
     return location;
 }
-vec<ID> & Trader::GetStores() {
-    return stores;
+vec<ID> & Trader::GetItinerary() {
+    return itinerary;
 }
-void Trader::AddStore(ID s) {
-    stores.push_back(s);
+void Trader::AddToItinerary(ID _id, int index) {
+    vec<ID>::iterator it = itinerary.begin()+index;
+    itinerary.insert(it,_id);
 }

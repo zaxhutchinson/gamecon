@@ -55,6 +55,26 @@ bool Time::operator<(const Time & t) {
 bool Time::operator>(const Time & t) {
     return !(*this==t && *this<t);
 }
+Time& Time::operator-=(const Time & t) {
+    if(this->quarter < t.quarter) {
+        this->quarter += QTRS_IN_HOUR;
+        this->hour -= 1;
+    }
+    if(this->hour < t.hour) {
+        this->hour += HRS_IN_DAY;
+        this->day -= 1;
+    }
+
+    this->quarter -= t.quarter;
+    this->hour -= t.hour;
+    this->day -= t.day;
+
+    return *this;
+}
+Time operator-(Time t, const Time & s) {
+    t -= s;
+    return t;
+}
 str Time::ToString() {
     std::stringstream ss;
     ss << day << " - " << hour << " - " << quarter;
@@ -68,6 +88,12 @@ int Time::GetHour() const {
 }
 int Time::GetDay() const {
     return day;
+}
+
+int Time::GetAsQuarters() {
+    return  quarter +
+            hour*QTRS_IN_HOUR +
+            day*QTRS_IN_DAY;
 }
 
 void Time::Tick() {

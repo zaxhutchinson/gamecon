@@ -15,7 +15,7 @@ using namespace gcon;
 class Sim {
 private:
     Time time;
-    Network tn;
+    Network network;
 public:
     Sim();
     void BuildTradeNetwork();
