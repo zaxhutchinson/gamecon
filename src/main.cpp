@@ -16,6 +16,9 @@ int main(int argc, char**argv) {
     Time t2(1,4,3);
     std::cout << (t1 - t2).ToString() << std::endl;
 
+    std::cout << t1.ToString() << std::endl;
+    std::cout << t2.ToString() << std::endl;
+
     for(int i = 1; i < argc; i++) {
         if(strcmp(argv[i],"001")==0) Test_001();
     }

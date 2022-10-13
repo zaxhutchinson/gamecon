@@ -6,6 +6,7 @@
 
 class Trader {
 private:
+    ID id;
     ID location;
     gcon::Actor * actor;
     vec<ID> itinerary;

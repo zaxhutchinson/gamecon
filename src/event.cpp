@@ -1,4 +1,4 @@
-#include"supdem.hpp"
+#include"event.hpp"
 
 
 Event::Event() 
@@ -28,6 +28,7 @@ opt<gcon::Item> Event::Check(RNG * rng, Time & curtime) {
     std::uniform_real_distribution<double> d(0.0,1.0);
 
     if(d(*rng) < actual_prob) {
+        last_event = curtime;
         return {item};
     } else {
         return std::nullopt;
