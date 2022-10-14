@@ -18,6 +18,8 @@ using opt = std::optional<T>;
 using str = std::string;
 template<typename T>
 using sptr = std::shared_ptr<T>;
+template<typename T>
+using uptr = std::unique_ptr<T>;
 using i64 = int64_t;
 template<typename T>
 using vec = std::vector<T>;

@@ -444,36 +444,36 @@ namespace gcon {
     std::string Network::ToString() {
         std::stringstream ss;
         for(
-            std::unordered_map<ID,Node>::iterator it = nodes.begin();
+            std::unordered_map<ID,std::unique_ptr<Node>>::iterator it = nodes.begin();
             it != nodes.end(); it++
         ) {
-            ss << it->second.ToString() << "\n\n";
+            ss << it->second->ToString() << "\n\n";
         }
 
         for(
-            std::unordered_map<ID,Actor>::iterator it = actors.begin();
+            std::unordered_map<ID,std::unique_ptr<Actor>>::iterator it = actors.begin();
             it != actors.end(); it++
         ) {
-            ss << it->second.ToString() << "\n\n";
+            ss << it->second->ToString() << "\n\n";
         }
         return ss.str();
     }
 
     void Network::RefreshNetwork() {
         for(
-            std::unordered_map<ID,Node>::iterator it = nodes.begin();
+            std::unordered_map<ID,std::unique_ptr<Node>>::iterator it = nodes.begin();
             it != nodes.end();
             it++ 
         ) {
-            it->second.ClearConns();
+            it->second->ClearConns();
         }
 
         for(
-            std::unordered_map<ID,Actor>::iterator it = actors.begin();
+            std::unordered_map<ID,std::unique_ptr<Actor>>::iterator it = actors.begin();
             it != actors.end();
             it++
         ) {
-            std::vector<ID> conns = it->second.GetNodes();
+            std::vector<ID> conns = it->second->GetNodes();
             for(
                 std::vector<ID>::iterator conn_it = conns.begin();
                 conn_it != conns.end();
@@ -485,22 +485,22 @@ namespace gcon {
         }
     }
 
-    void Network::RegisterNode(Node node) {
-        nodes.emplace(node.GetID(),node);
+    void Network::RegisterNode(std::unique_ptr<Node> node) {
+        nodes.emplace(node->GetID(),std::move(node));
     }
-    void Network::RegisterActor(Actor actor) {
-        actors.emplace(actor.GetID(), actor);
+    void Network::RegisterActor(std::unique_ptr<Actor> actor) {
+        actors.emplace(actor->GetID(), std::move(actor));
     }
     Node * Network::GetNode(ID node_id) {
         try {
-            return &(nodes.at(node_id));
+            return nodes.at(node_id).get();
         } catch(std::out_of_range & e) {
             return nullptr;
         }
     }
     Actor * Network::GetActor(ID actor_id) {
         try {
-            return &(actors.at(actor_id));
+            return actors.at(actor_id).get();
         } catch(std::out_of_range & e) {
             return nullptr;
         }

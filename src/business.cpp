@@ -3,20 +3,26 @@
 Business::Business()
     : id(ID()), location(Vec2())
 {}
-Business::Business(Vec2 _location, gcon::Node _node)
-    : location(_location), node(_node)
+Business::Business(ID _id, Vec2 _location)
+    : id(_id), location(_location)
 {}
 ID Business::GetID() const {
-    return node.GetID();
+    return id;
 }
 Vec2 Business::GetLocation() const {
     return location;
 }
+gcon::Node * Business::GetNode() {
+    return node;
+}
+void Business::SetNode(gcon::Node * _node) {
+    node = _node;
+}
 void Business::AddStock(gcon::Item item) {
-    node.AddItem(item);    
+    node->AddItem(item);    
 }
 void Business::AddRequest(gcon::Item item) {
-    node.InitiateRequest(item);
+    node->InitiateRequest(item);
 }
 void Business::AddSupplyEvent(Event event) {
     supply_events.push_back(event);

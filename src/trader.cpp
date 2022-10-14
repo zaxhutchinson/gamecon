@@ -3,14 +3,17 @@
 Trader::Trader() {
 
 }
-Trader::Trader(ID _location, gcon::Actor * _actor)
-    : location(_location), actor(_actor)
+Trader::Trader(ID _id, ID _location)
+    : location(_location)
 {}
 ID Trader::GetID() const {
     return actor->GetID();
 }
 gcon::Actor * Trader::GetActor() {
     return actor;
+}
+void Trader::SetActor(gcon::Actor * _actor) {
+    actor = _actor;
 }
 ID Trader::GetLocation() const {
     return location;

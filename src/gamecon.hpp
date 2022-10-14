@@ -146,8 +146,8 @@ namespace gcon {
 
     class Network {
     private:
-        std::unordered_map<ID,Node> nodes;
-        std::unordered_map<ID,Actor> actors;
+        std::unordered_map<ID,std::unique_ptr<Node>> nodes;
+        std::unordered_map<ID,std::unique_ptr<Actor>> actors;
     public:
         Network();
         Network(const Network & tn) = delete;
@@ -162,8 +162,8 @@ namespace gcon {
             node from the trader's network, etc.
         */
         void RefreshNetwork();
-        void RegisterNode(Node node);
-        void RegisterActor(Actor actor);
+        void RegisterNode(std::unique_ptr<Node> node);
+        void RegisterActor(std::unique_ptr<Actor> actor);
         Node * GetNode(ID node_id);
         Actor * GetActor(ID actor_id);
         void ActorArrives(ID actor_id, ID from_node_id, ID to_node_id);

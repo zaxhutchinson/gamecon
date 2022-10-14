@@ -30,28 +30,28 @@ int main(int argc, char**argv) {
 void Test_001() {
 
 
-    Node house("House");
-    Node farm("Farm");
-    Node store("Store");
+    uptr<Node> house = std::make_unique<Node>("House");
+    uptr<Node> farm = std::make_unique<Node>("Farm");
+    uptr<Node> store = std::make_unique<Node>("Store");
 
-    Actor owner("Owner");
-    owner.AddNode("House");
-    owner.AddNode("Store");
-    Actor farmer("Farmer");
-    farmer.AddNode("Farm");
-    farmer.AddNode("Store");
+    uptr<Actor> owner = std::make_unique<Actor>("Owner");
+    owner->AddNode("House");
+    owner->AddNode("Store");
+    uptr<Actor> farmer = std::make_unique<Actor>("Farmer");
+    farmer->AddNode("Farm");
+    // farmer->AddDeliveries("Store");
 
     Item item("Carrot",10);
-    farm.AddItem(item);
-    house.InitiateRequest(item);
+    farm->AddItem(item);
+    house->InitiateRequest(item);
 
     Network network;
 
-    network.RegisterNode(house);
-    network.RegisterNode(farm);
-    network.RegisterNode(store);
-    network.RegisterActor(owner);
-    network.RegisterActor(farmer);
+    network.RegisterNode(std::move(house));
+    network.RegisterNode(std::move(farm));
+    network.RegisterNode(std::move(store));
+    network.RegisterActor(std::move(owner));
+    network.RegisterActor(std::move(farmer));
 
     network.RefreshNetwork();
 
