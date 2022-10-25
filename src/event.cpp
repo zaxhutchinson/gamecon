@@ -21,10 +21,10 @@ Time Event::GetFrequency() const {
 }
 
 opt<gcon::Item> Event::Check(RNG * rng, Time & curtime) {
-    
-    double actual_prob = (curtime-last_event).GetAsQuarters() / 
-                static_cast<double>(freqency.GetAsQuarters());
 
+    double actual_prob = ((curtime-last_event).GetAsQuarters() / 
+                static_cast<double>(freqency.GetAsQuarters())) * probability;
+    
     std::uniform_real_distribution<double> d(0.0,1.0);
 
     if(d(*rng) < actual_prob) {

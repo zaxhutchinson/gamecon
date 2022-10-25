@@ -9,8 +9,26 @@ Time::Time()
 {}
 
 Time::Time(int _day, int _hour, int _quarter)
-    : day(_day), hour(_hour), quarter(_quarter)
-{}
+{
+    quarter = _quarter;
+    hour = _hour;
+    day = _day;
+    hour += _quarter / QTRS_IN_HOUR;
+    quarter = _quarter % QTRS_IN_HOUR;
+    day += hour / HRS_IN_DAY;
+    hour = hour % HRS_IN_DAY;
+}
+Time::Time(vec<int> & v) {
+    if(v.size() < 3) {
+        day = 0;
+        hour = 0;
+        quarter = 0;
+    } else {
+        day = v[0];
+        hour = v[1];
+        quarter = v[2];
+    }
+}
 bool Time::operator==(const Time & t) {
     return day==t.day && hour==t.hour && quarter==t.quarter;
 }
@@ -55,6 +73,12 @@ bool Time::operator<(const Time & t) {
 bool Time::operator>(const Time & t) {
     return !(*this==t && *this<t);
 }
+bool Time::operator<=(const Time & t) {
+    return (*this < t) || (*this==t);
+}
+bool Time::operator>=(const Time & t) {
+    return (*this > t) || (*this==t);
+}    
 Time& Time::operator-=(const Time & t) {
     if(this->quarter < t.quarter) {
         this->quarter += QTRS_IN_HOUR;

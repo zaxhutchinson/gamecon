@@ -50,6 +50,7 @@ namespace gcon {
         Item& GetItem();
         std::vector<ID>& GetDestList();
         bool IsIDInDestList(ID id);
+        bool IsIDTheOrigin(ID id);
         void PushDest(ID new_dest);
         std::optional<ID> PopDest();
     };
@@ -168,6 +169,7 @@ namespace gcon {
         Actor * GetActor(ID actor_id);
         void ActorArrives(ID actor_id, ID from_node_id, ID to_node_id);
         void ActorLeaves(ID actor_id, ID from_node_id, ID to_node_id);
+        void Update();
     };
 
 

@@ -45,6 +45,13 @@ namespace gcon {
         }
         return false;
     }
+    bool Request::IsIDTheOrigin(ID id) {
+        if(id==dest_list.front()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     void Request::PushDest(ID new_dest) {
         dest_list.push_back(new_dest);
     }
@@ -202,13 +209,16 @@ namespace gcon {
                 std::advance(rit,1);
                 d.GetDestList().erase(rit.base());
             } else {
-                d.GetDestList().erase(std::next(rit).base());
+                
+                //d.GetDestList().erase(std::next(rit).base());
                 break;
             }
         }
 
         // If this node was the original destination, add item to items.
-        if(d.GetDestList().size()==0) {
+        //if(d.GetDestList().size()==0) {
+        //std::cout << d.GetDestList().back() << " " << id << std::endl;
+        if(d.GetDestList().back()==id) {
             AddItem(d.GetItem());
         } else {
             deliveries.push_back(d);
@@ -223,17 +233,20 @@ namespace gcon {
             id to the request's dest list until this request is passed
             on to someone else.
         */
-        if(r.IsIDInDestList(id)) {
-            return false;
-        }
-        else {
-            requests.push_back(r);
-            return true;
-        }
+        requests.push_back(r);
+        return true;
+        // if(!r.IsIDTheOrigin(id)) {
+        //     return false;
+        // }
+        // else {
+        //     requests.push_back(r);
+        //     return true;
+        // }
     }
 
     void Node::InitiateRequest(Item item) {
         Request r(item);
+        r.PushDest(id);
         requests.push_back(r);
     }
 
@@ -248,34 +261,43 @@ namespace gcon {
                 
             */
             std::vector<ID> & req_dest_list = it->GetDestList();
+            Request r = *it;
 
             if(req_dest_list.size()==0) {
-                Request r = *it;
                 r.PushDest(id);
+            }
+
+            if(r.IsIDInDestList(next_dest)) {
+                
+                it++;
+            }
+
+            else {
                 reqs.push_back(r);
                 it = requests.erase(it);
-            } else {
-                if(conns.size()==1) {
-                    Request r = *it;
-                    r.PushDest(id);
-                    reqs.push_back(r);
-                    it = requests.erase(it);
-                }
-                else if(req_dest_list.back() == next_dest && req_dest_list.front() != next_dest) {
-                    Request r = *it;
-                    r.PushDest(id);
-                    reqs.push_back(r);
-                    it = requests.erase(it);
-                }
-                else if(req_dest_list.back() != next_dest && req_dest_list.front() != next_dest) {
-                    Request r = *it;
-                    r.PushDest(id);
-                    reqs.push_back(r);
-                    it = requests.erase(it);
-                } else {
-                    it++;
-                }
+
             }
+                // if(conns.size()==1) {
+                //     Request r = *it;
+                //     r.PushDest(id);
+                //     reqs.push_back(r);
+                //     it = requests.erase(it);
+                // }
+                // else if(req_dest_list.back() == next_dest && req_dest_list.front() != next_dest) {
+                //     Request r = *it;
+                //     r.PushDest(id);
+                //     reqs.push_back(r);
+                //     it = requests.erase(it);
+                // }
+                // else if(req_dest_list.back() != next_dest && req_dest_list.front() != next_dest) {
+                //     Request r = *it;
+                //     r.PushDest(id);
+                //     reqs.push_back(r);
+                //     it = requests.erase(it);
+                // } else {
+                //     it++;
+                // }
+            
         }
 
         return reqs;
@@ -309,6 +331,11 @@ namespace gcon {
             std::vector<Request>::iterator it = requests.begin();
             it != requests.end();
         ) {
+            if(it->GetDestList().front()==id) {
+                it++;
+                continue;
+            }
+
             std::vector<Item>::iterator item_it = FindItem(it->GetItem().GetID());
             if(item_it != items.end()) {
 
@@ -538,7 +565,7 @@ namespace gcon {
             }
         }
 
-        to_node->CheckAndFillRequests();
+        // to_node->CheckAndFillRequests();
     }
     void Network::ActorLeaves(ID actor_id, ID from_node_id, ID to_node_id) {
         Node * from_node = GetNode(from_node_id);
@@ -546,12 +573,21 @@ namespace gcon {
         Actor * actor = GetActor(actor_id);
         if(!to_node || !from_node || !actor) return;
 
-        to_node->CheckAndFillRequests();
+        // to_node->CheckAndFillRequests();
 
         std::vector<Delivery> outbound_deliveries = from_node->PassOnDeliveries(to_node_id);
         std::vector<Request> outbound_requests = from_node->PassOnRequests(to_node_id);
 
         actor->AddDeliveries(outbound_deliveries);
         actor->AddRequests(outbound_requests);
+    }
+
+    void Network::Update() {
+        for(
+            std::unordered_map<ID,std::unique_ptr<Node>>::iterator it = nodes.begin();
+            it != nodes.end(); it++
+        ) {
+            it->second->CheckAndFillRequests();
+        }
     }
 }

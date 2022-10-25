@@ -5,6 +5,10 @@
 #include"vec2.hpp"
 #include"event.hpp"
 
+enum class BusRtn {
+    NOCHANGE
+};
+
 class Business {
 private:
     ID id;
@@ -28,6 +32,7 @@ public:
     void AddSupplyEvent(Event event);
     void AddDemandEvent(Event event);
 
-    void CheckEvents(RNG * rng, Time & curtime);
+    void CheckEvents(Time & curtime, RNG * rng);
+    BusRtn Update(Time & curtime, RNG * rng);
 
 };

@@ -27,3 +27,4 @@ using ID = str;  // Override to use a different type
 template<typename T, typename U>
 using umap = std::unordered_map<T,U>;
 using RNG = std::mt19937_64;
+using sizet = size_t;

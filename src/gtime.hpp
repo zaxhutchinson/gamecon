@@ -15,6 +15,7 @@ private:
 public:
     Time();
     Time(int _day, int _hour, int _quarter);
+    Time(vec<int> & v);
     Time(const Time & t) = default;
     Time(Time && t) = default;
     Time& operator=(const Time & t) = default;
@@ -22,6 +23,8 @@ public:
     bool operator==(const Time & t);
     bool operator<(const Time & t);
     bool operator>(const Time & t);
+    bool operator<=(const Time & t);
+    bool operator>=(const Time & t);
     Time& operator-=(const Time & t);
     friend Time operator-(Time t, const Time & s);
     str ToString();

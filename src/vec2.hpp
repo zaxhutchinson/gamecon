@@ -9,6 +9,7 @@ private:
 public:
     Vec2();
     Vec2(double _x, double _y);
+    Vec2(vec<double> & v);
     Vec2(const Vec2 & v) = default;
     Vec2(Vec2 && v) = default;
     Vec2& operator=(const Vec2 & v) = default;

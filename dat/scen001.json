@@ -1,0 +1,35 @@
+{
+    "businesses": {
+        "store_1" : {
+            "location":[10,0],
+            "d_events": [
+                {
+                    "item_id":"apple",
+                    "item_amt":8,
+                    "prob":0.05,
+                    "freq":[1,0,0]
+                }
+            ]
+        },
+        "farm_1" : {
+            "location":[0,0],
+            "s_events": [
+                {
+                    "item_id":"apple",
+                    "item_amt":10,
+                    "prob":0.05,
+                    "freq":[1,0,0]
+                }
+            ]
+        }
+    },
+    "traders": {
+        "Farmer" : {
+            "location":"farm_1",
+            "itinerary":["farm_1","store_1"],
+            "speed":10.0,
+            "random_itinerary":false,
+            "time_at_dest":[0,1,0]
+        }
+    }
+}

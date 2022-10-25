@@ -9,6 +9,10 @@ Vec2::Vec2(double _x, double _y) {
     x = _x;
     y = _y;
 }
+Vec2::Vec2(vec<double> & v) {
+    x = v[0];
+    y = v[1];
+}
 double Vec2::X() const {
     return x;
 }

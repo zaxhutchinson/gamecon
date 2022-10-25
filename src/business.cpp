@@ -31,7 +31,7 @@ void Business::AddDemandEvent(Event event) {
     demand_events.push_back(event);
 }
 
-void Business::CheckEvents(RNG * rng, Time & curtime) {
+void Business::CheckEvents(Time & curtime, RNG * rng) {
 
     for(
         vec<Event>::iterator it = supply_events.begin();
@@ -53,4 +53,12 @@ void Business::CheckEvents(RNG * rng, Time & curtime) {
         }
     }
 
+}
+
+BusRtn Business::Update(Time & curtime, RNG * rng) {
+    BusRtn rtn = BusRtn::NOCHANGE;
+
+    CheckEvents(curtime,rng);
+
+    return rtn;
 }
