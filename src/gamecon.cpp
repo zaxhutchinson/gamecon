@@ -266,12 +266,27 @@ namespace gcon {
             if(req_dest_list.size()==0) {
                 r.PushDest(id);
             }
-
-            if(r.IsIDInDestList(next_dest)) {
-                
+            
+            if(r.IsIDTheOrigin(next_dest)) {
                 it++;
             }
 
+            if(r.IsIDInDestList(next_dest)) {
+                
+                bool all_tried = true;
+                for(size_t i = 0; i < conns.size(); i++) {
+                    if(r.IsIDInDestList(conns[i])) {
+                        all_tried = false;
+                    }
+                }
+
+                if(all_tried) {
+                    reqs.push_back(r);
+                    it = requests.erase(it);
+                } else {
+                    it++;
+                }
+            }
             else {
                 reqs.push_back(r);
                 it = requests.erase(it);
