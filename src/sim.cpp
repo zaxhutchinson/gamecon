@@ -12,8 +12,8 @@ Sim::Sim() {
 str Sim::GetNetworkAsString() {
     return network.ToString();
 }
-void Sim::LoadTradeNetwork() {
-    std::ifstream ifs("dat/scen001.json");
+void Sim::LoadTradeNetwork(str filename) {
+    std::ifstream ifs("dat/"+filename);
     nlohmann::json j;
     ifs >> j;
 
@@ -61,7 +61,8 @@ void Sim::LoadBusinesses(nlohmann::json j) {
                 int item_amt = sit->at("item_amt");
                 double prob = sit->at("prob");
                 vec<int> freq = sit->at("freq");
-                Event event(Item(item_id,item_amt),prob,Time(freq));
+                int on_hand_max = sit->at("on_hand_max");
+                Event event(Item(item_id,item_amt),prob,Time(freq),on_hand_max);
                 business.AddSupplyEvent(event);
             }
         }
@@ -77,7 +78,8 @@ void Sim::LoadBusinesses(nlohmann::json j) {
                 int item_amt = sit->at("item_amt");
                 double prob = sit->at("prob");
                 vec<int> freq = sit->at("freq");
-                Event event(Item(item_id,item_amt),prob,Time(freq));
+                int on_hand_max = sit->at("on_hand_max");
+                Event event(Item(item_id,item_amt),prob,Time(freq),on_hand_max);
                 business.AddDemandEvent(event);
             }
 

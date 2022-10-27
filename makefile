@@ -6,10 +6,11 @@ TARGET=gamecon # define the name of the executable
 
 # RELEASE
 # CFLAGS= -c -std=c++17 -Wall -O3
+# LFLAGS= -Llib -lm -pg
 # DEBUG
-CFLAGS= -c -std=c++17 -Wall -g3
-
+CFLAGS= -c -std=c++17 -Wall -g
 LFLAGS= -Llib -lm
+
 SRCDIR = src
 OBJDIR = obj
 INCLUDE = -Iinc

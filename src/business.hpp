@@ -16,6 +16,7 @@ private:
     gcon::Node * node;
     vec<Event> supply_events;
     vec<Event> demand_events;
+    vec<Event> consume_events;
 public:
     Business();
     Business(ID _id, Vec2 _location);
@@ -28,9 +29,13 @@ public:
     gcon::Node * GetNode();
     void SetNode(gcon::Node * _node);
     void AddStock(gcon::Item item);
+    void RemoveStock(gcon::Item item);
     void AddRequest(gcon::Item item);
     void AddSupplyEvent(Event event);
     void AddDemandEvent(Event event);
+    void AddConsumeEvent(Event event);
+
+    int GetAmountOfItemInStock(ID item_id);
 
     void CheckEvents(Time & curtime, RNG * rng);
     BusRtn Update(Time & curtime, RNG * rng);

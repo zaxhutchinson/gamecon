@@ -30,7 +30,7 @@ public:
 
     str GetNetworkAsString();
 
-    void LoadTradeNetwork();
+    void LoadTradeNetwork(str filename);
     void LoadTraders(nlohmann::json j);
     void LoadBusinesses(nlohmann::json j);
     void Loop(int iterations);

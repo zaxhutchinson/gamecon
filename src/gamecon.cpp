@@ -183,6 +183,9 @@ namespace gcon {
         std::vector<Item>::iterator it = FindItem(i.GetID());
         if(it!=items.end()) {
             it->SetAmt(it->GetAmt()+i.GetAmt());
+            if(it->GetAmt() <= 0) {
+                it->SetAmt(0);
+            }
         } else {
             items.push_back(i);
         }
@@ -193,7 +196,7 @@ namespace gcon {
     bool Node::AddDelivery(Delivery d) {
         // Trying to add a delivery to this node which is not in
         // its dest list.
-        if(!d.IsIDInDestList(id)) return false;
+        // if(!d.IsIDInDestList(id)) return false;
         
         /* 
             Work backwards through the dest list removing this node's
@@ -210,7 +213,7 @@ namespace gcon {
                 d.GetDestList().erase(rit.base());
             } else {
                 
-                //d.GetDestList().erase(std::next(rit).base());
+                // d.GetDestList().erase(std::next(rit).base());
                 break;
             }
         }
@@ -218,7 +221,9 @@ namespace gcon {
         // If this node was the original destination, add item to items.
         //if(d.GetDestList().size()==0) {
         //std::cout << d.GetDestList().back() << " " << id << std::endl;
-        if(d.GetDestList().back()==id) {
+        if(d.GetDestList().empty()) {
+            AddItem(d.GetItem());
+        } else if(d.GetDestList().front()==id) {
             AddItem(d.GetItem());
         } else {
             deliveries.push_back(d);
@@ -250,6 +255,15 @@ namespace gcon {
         requests.push_back(r);
     }
 
+    int Node::GetAmountOfItemInStock(ID item_id) {
+        std::vector<Item>::iterator it = FindItem(item_id);
+        if(it != items.end()) {
+            return it->GetAmt();
+        } else {
+            return 0;
+        }
+    }
+
     std::vector<Request> Node::PassOnRequests(ID next_dest) {
         std::vector<Request> reqs;
         for(
@@ -263,15 +277,14 @@ namespace gcon {
             std::vector<ID> & req_dest_list = it->GetDestList();
             Request r = *it;
 
-            if(req_dest_list.size()==0) {
-                r.PushDest(id);
-            }
+            // if(req_dest_list.size()==0) {
+            //     r.PushDest(id);
+            // }
             
             if(r.IsIDTheOrigin(next_dest)) {
                 it++;
             }
-
-            if(r.IsIDInDestList(next_dest)) {
+            else if(r.IsIDInDestList(next_dest)) {
                 
                 bool all_tried = true;
                 for(size_t i = 0; i < conns.size(); i++) {
@@ -281,6 +294,7 @@ namespace gcon {
                 }
 
                 if(all_tried) {
+                    if(req_dest_list.back()!=id) r.PushDest(id);
                     reqs.push_back(r);
                     it = requests.erase(it);
                 } else {
@@ -288,6 +302,7 @@ namespace gcon {
                 }
             }
             else {
+                if(req_dest_list.back()!=id) r.PushDest(id);
                 reqs.push_back(r);
                 it = requests.erase(it);
 

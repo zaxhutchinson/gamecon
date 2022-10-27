@@ -23,6 +23,9 @@ ID Trader::GetDestination() const {
 }
 void Trader::SetActor(gcon::Actor * _actor) {
     actor = _actor;
+    for(sizet i = 0; i < itinerary.size(); i++) {
+        actor->AddNode(itinerary[i]);
+    }
 }
 ID Trader::GetLocation() const {
     return location;

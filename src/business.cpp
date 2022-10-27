@@ -30,16 +30,28 @@ void Business::AddSupplyEvent(Event event) {
 void Business::AddDemandEvent(Event event) {
     demand_events.push_back(event);
 }
+void Business::AddConsumeEvent(Event event) {
+    consume_events.push_back(event);
+}
+int Business::GetAmountOfItemInStock(ID item_id) {
+    return node->GetAmountOfItemInStock(item_id);
+}
 
 void Business::CheckEvents(Time & curtime, RNG * rng) {
 
     for(
         vec<Event>::iterator it = supply_events.begin();
-        it != supply_events.end(); it++
+        it != supply_events.end();
     ) {
         opt<gcon::Item> result = it->Check(rng,curtime);
         if(result.has_value()) {
-            AddStock(*result);
+            int amt_in_stock = GetAmountOfItemInStock(result->GetID());
+            if(amt_in_stock < it->GetOnHandMax()) {
+                AddStock(*result);
+            }
+            it = supply_events.erase(it);
+        } else {
+            it++;
         }
     }
 
@@ -49,7 +61,30 @@ void Business::CheckEvents(Time & curtime, RNG * rng) {
     ) {
         opt<gcon::Item> result = it->Check(rng,curtime);
         if(result.has_value()) {
-            AddRequest(*result);
+            int amt_in_stock = GetAmountOfItemInStock(result->GetID());
+            if(amt_in_stock < it->GetOnHandMax()) {
+                AddRequest(*result);
+            }
+            it = demand_events.erase(it);
+        } else {
+            it++;
+        }
+    }
+
+    for(
+        vec<Event>::iterator it = consume_events.begin();
+        it != consume_events.end(); it++
+    ) {
+        opt<gcon::Item> result = it->Check(rng,curtime);
+        if(result.has_value()) {
+
+            int amt_in_stock = GetAmountOfItemInStock(result->GetID());
+            if(amt_in_stock > 0) {
+                AddStock(*result);
+            }
+            it = demand_events.erase(it);
+        } else {
+            it++;
         }
     }
 

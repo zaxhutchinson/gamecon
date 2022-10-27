@@ -105,6 +105,7 @@ namespace gcon {
         bool AddDelivery(Delivery d);
         bool AddRequest(Request r);
         void InitiateRequest(Item item);
+        int GetAmountOfItemInStock(ID item_id);
         std::vector<Request> PassOnRequests(ID next_dest);
         std::vector<Delivery> PassOnDeliveries(ID next_dest);
         void CheckAndFillRequests();
